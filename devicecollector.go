@@ -362,22 +362,32 @@ func (c *DeviceCollector) collectDeviceStations(ch chan<- prometheus.Metric, sit
 			copy(llabels, labels)
 			llabels = append(llabels, r.Name, r.Radio)
 
+			NumberStations := 0
+			NumberUserStations := 0
+			NumberGuestStations := 0
+
+			if r.Stats != nil {
+				NumberStations = r.Stats.NumberStations
+				NumberUserStations = r.Stats.NumberUserStations
+				NumberGuestStations = r.Stats.NumberGuestStations
+			}
+
 			ch <- prometheus.MustNewConstMetric(
 				c.Stations,
 				prometheus.GaugeValue,
-				float64(r.Stats.NumberStations),
+				float64(NumberStations),
 				llabels...,
 			)
 			ch <- prometheus.MustNewConstMetric(
 				c.UserStations,
 				prometheus.GaugeValue,
-				float64(r.Stats.NumberUserStations),
+				float64(NumberUserStations),
 				llabels...,
 			)
 			ch <- prometheus.MustNewConstMetric(
 				c.GuestStations,
 				prometheus.GaugeValue,
-				float64(r.Stats.NumberGuestStations),
+				float64(NumberGuestStations),
 				llabels...,
 			)
 		}
