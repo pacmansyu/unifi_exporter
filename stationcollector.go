@@ -3,7 +3,7 @@ package unifiexporter
 import (
 	"log"
 
-	"github.com/mdlayher/unifi"
+	"github.com/pacmansyu/unifi"
 	"github.com/prometheus/client_golang/prometheus"
 )
 

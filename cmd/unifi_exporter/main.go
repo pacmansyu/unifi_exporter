@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mdlayher/unifi"
-	"github.com/mdlayher/unifi_exporter"
+	"github.com/pacmansyu/unifi"
+	"github.com/pacmansyu/unifi_exporter"
 	"github.com/prometheus/client_golang/prometheus"
 	"gopkg.in/yaml.v2"
 )
@@ -25,7 +25,7 @@ type Config struct {
 
 const (
 	// userAgent is ther user agent reported to the UniFi Controller API.
-	userAgent = "github.com/mdlayher/unifi_exporter"
+	userAgent = "github.com/pacmansyu/unifi_exporter"
 )
 
 func main() {
