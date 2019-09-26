@@ -15,6 +15,7 @@ type DeviceCollector struct {
 	AdoptedDevices   *prometheus.Desc
 	UnadoptedDevices *prometheus.Desc
 
+	DeviceState *prometheus.Desc
 	UptimeSecondsTotal *prometheus.Desc
 
 	WirelessReceivedBytesTotal    *prometheus.Desc
@@ -74,6 +75,13 @@ func NewDeviceCollector(c *unifi.Client, sites []*unifi.Site) *DeviceCollector {
 			prometheus.BuildFQName(namespace, subsystem, "unadopted"),
 			"Number of devices which are not adopted",
 			labelsSiteOnly,
+			nil,
+		),
+
+		DeviceState: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, subsystem, "state"),
+			"Device state",
+			labelsDevice,
 			nil,
 		),
 
@@ -191,6 +199,7 @@ func (c *DeviceCollector) collect(ch chan<- prometheus.Metric) (*prometheus.Desc
 
 		c.collectDeviceAdoptions(ch, s.Description, devices)
 		c.collectDeviceUptime(ch, s.Description, devices)
+		c.collectDeviceState(ch, s.Description, devices)
 		c.collectDeviceBytes(ch, s.Description, devices)
 		c.collectDeviceStations(ch, s.Description, devices)
 	}
@@ -224,6 +233,26 @@ func (c *DeviceCollector) collectDeviceAdoptions(ch chan<- prometheus.Metric, si
 		float64(unadopted),
 		siteLabel,
 	)
+}
+
+// collectDeviceState collects online/offline state for
+// UniFi devices.
+func (c *DeviceCollector) collectDeviceState(ch chan<- prometheus.Metric, siteLabel string, devices []*unifi.Device) {
+	for _, d := range devices {
+		labels := []string{
+			siteLabel,
+			d.ID,
+			d.NICs[0].MAC.String(),
+			d.Name,
+		}
+
+		ch <- prometheus.MustNewConstMetric(
+			c.DeviceState,
+			prometheus.GaugeValue,
+			float64(d.State),
+			labels...,
+		)
+	}
 }
 
 // collectDeviceUptime collects device uptime for UniFi devices.
